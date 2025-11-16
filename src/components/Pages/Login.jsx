@@ -6,18 +6,34 @@ import { Box, Button, TextField, Typography, Link, Paper } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { login } from "../../Redux/slices/authSlice";
 
+// Hardcoded demo users for frontend-only authentication
+const demoUsers = [{ email: "Ali@gmail.com", password: "123456" }];
+
 const Login = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const navigate = useNavigate();
+  const [error, setError] = useState(""); // to show error message
 
   const handleLogin = () => {
-    dispatch(login({ email }));
-    navigate("/dashboard");
+    setError(""); // reset error
+
+    const foundUser = demoUsers.find(
+      (user) => user.email === email && user.password === password
+    );
+
+    if (foundUser) {
+      // Login successful
+      dispatch(login({ email: foundUser.email }));
+      navigate("/dashboard");
+    } else {
+      // Login failed
+      setError("Invalid email or password");
+    }
   };
+
   return (
     <Box
       sx={{
@@ -114,6 +130,13 @@ const Login = () => {
             shrink: true,
           }}
         />
+
+        {/* Error Message */}
+        {error && (
+          <Typography color="error" fontSize={14}>
+            {error}
+          </Typography>
+        )}
 
         {/* Login Button */}
         <Button
